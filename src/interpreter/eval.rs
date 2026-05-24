@@ -39,7 +39,10 @@ pub fn eval_script(interp: &mut Interpreter, script: &str) -> Result<TclValue, T
 
 /// Evaluate a script, catching top-level `return` and extracting the value.
 /// Used by command substitution `[...]` and the public `eval()` API.
-pub fn eval_script_catching_return(interp: &mut Interpreter, script: &str) -> Result<TclValue, TclError> {
+pub fn eval_script_catching_return(
+    interp: &mut Interpreter,
+    script: &str,
+) -> Result<TclValue, TclError> {
     match eval_script(interp, script) {
         Ok(v) => Ok(v),
         Err(e) if matches!(e.code, ErrorCode::Return(_)) => {
@@ -102,9 +105,17 @@ pub fn dispatch(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue,
 }
 
 /// Call a procedure.
-fn call_proc(interp: &mut Interpreter, proc_def: &Proc, args: &[TclValue]) -> Result<TclValue, TclError> {
+fn call_proc(
+    interp: &mut Interpreter,
+    proc_def: &Proc,
+    args: &[TclValue],
+) -> Result<TclValue, TclError> {
     // Check arity
-    let min_args = proc_def.params.iter().filter(|p| p.default.is_none()).count();
+    let min_args = proc_def
+        .params
+        .iter()
+        .filter(|p| p.default.is_none())
+        .count();
     let max_args = proc_def.params.len();
     if args.len() < min_args || args.len() > max_args {
         return Err(TclError::new(format!(

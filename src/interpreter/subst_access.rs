@@ -33,7 +33,9 @@ pub(super) fn apply_property(
             _ => TclValue::Int(val.as_str().len() as i64),
         },
         "keys" => match val {
-            TclValue::Dict(d) => TclValue::List(d.iter().map(|(k, _)| TclValue::Str(k.clone())).collect()),
+            TclValue::Dict(d) => {
+                TclValue::List(d.iter().map(|(k, _)| TclValue::Str(k.clone())).collect())
+            }
             _ => return Err(TclError::new(".keys requires a dict")),
         },
         "values" => match val {
@@ -158,7 +160,9 @@ pub(super) fn dict_get(val: &TclValue, key: &str) -> Result<TclValue, TclError> 
                     return Ok(v.clone());
                 }
             }
-            Err(TclError::new(format!("key \"{key}\" not known in dictionary")))
+            Err(TclError::new(format!(
+                "key \"{key}\" not known in dictionary"
+            )))
         }
         _ => Err(TclError::new(format!(
             "can't use \"{key}\" as dict key on {}",

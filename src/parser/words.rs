@@ -5,7 +5,11 @@ use super::words_ext::{parse_heredoc, peek_heredoc, skip_to_eol};
 use crate::error::TclError;
 
 /// Parse the words of a single command until end-of-line, semicolon, or EOF.
-pub fn parse_command_words(chars: &[char], pos: &mut usize, line: &mut usize) -> Result<Vec<Word>, TclError> {
+pub fn parse_command_words(
+    chars: &[char],
+    pos: &mut usize,
+    line: &mut usize,
+) -> Result<Vec<Word>, TclError> {
     let mut words = Vec::new();
 
     loop {

@@ -30,11 +30,7 @@ impl TclValue {
             Self::Str(s) => Cow::Borrowed(s),
             Self::Int(n) => Cow::Owned(n.to_string()),
             Self::Float(f) => Cow::Owned(format_float(*f)),
-            Self::Bool(b) => Cow::Borrowed(if *b {
-                "1"
-            } else {
-                "0"
-            }),
+            Self::Bool(b) => Cow::Borrowed(if *b { "1" } else { "0" }),
             Self::List(items) => Cow::Owned(list_to_string(items)),
             Self::Dict(pairs) => Cow::Owned(dict_to_string(pairs)),
         }
@@ -50,7 +46,10 @@ impl TclValue {
                 .trim()
                 .parse::<i64>()
                 .map_err(|_| TclError::new(format!("expected integer but got \"{}\"", s))),
-            _ => Err(TclError::new(format!("expected integer but got {}", self.type_name()))),
+            _ => Err(TclError::new(format!(
+                "expected integer but got {}",
+                self.type_name()
+            ))),
         }
     }
 
@@ -59,16 +58,15 @@ impl TclValue {
         match self {
             Self::Float(f) => Ok(*f),
             Self::Int(n) => Ok(*n as f64),
-            Self::Bool(b) => Ok(if *b {
-                1.0
-            } else {
-                0.0
-            }),
+            Self::Bool(b) => Ok(if *b { 1.0 } else { 0.0 }),
             Self::Str(s) => s
                 .trim()
                 .parse::<f64>()
                 .map_err(|_| TclError::new(format!("expected number but got \"{}\"", s))),
-            _ => Err(TclError::new(format!("expected number but got {}", self.type_name()))),
+            _ => Err(TclError::new(format!(
+                "expected number but got {}",
+                self.type_name()
+            ))),
         }
     }
 
@@ -79,7 +77,10 @@ impl TclValue {
             Self::Int(n) => Ok(*n != 0),
             Self::Float(f) => Ok(*f != 0.0),
             Self::Str(s) => str_to_bool(s),
-            _ => Err(TclError::new(format!("expected boolean but got {}", self.type_name()))),
+            _ => Err(TclError::new(format!(
+                "expected boolean but got {}",
+                self.type_name()
+            ))),
         }
     }
 
@@ -259,7 +260,10 @@ mod tests {
 
     #[test]
     fn list_with_spaces_quoted() {
-        let v = TclValue::List(vec![TclValue::Str("hello world".into()), TclValue::Str("foo".into())]);
+        let v = TclValue::List(vec![
+            TclValue::Str("hello world".into()),
+            TclValue::Str("foo".into()),
+        ]);
         assert_eq!(v.as_str(), "{hello world} foo");
     }
 

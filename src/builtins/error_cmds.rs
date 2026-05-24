@@ -59,7 +59,9 @@ fn cmd_try(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclE
 /// `catch script ?resultVar?`
 fn cmd_catch(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"catch script ?resultVar?\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"catch script ?resultVar?\"",
+        ));
     }
     let script = args[0].as_str().to_string();
     let result = interp.eval(&script);

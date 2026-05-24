@@ -13,7 +13,9 @@ pub fn register(interp: &mut Interpreter) {
 
 fn cmd_lmap(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 2 {
-        return Err(TclError::new("wrong # args: should be \"lmap list lambda\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lmap list lambda\"",
+        ));
     }
     let list = args[0].as_list()?;
     let lambda = args[1].as_str().to_string();
@@ -46,7 +48,9 @@ fn cmd_lmap(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, Tcl
 /// `lfilter list lambda` — filter a list.
 fn cmd_lfilter(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 2 {
-        return Err(TclError::new("wrong # args: should be \"lfilter list lambda\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lfilter list lambda\"",
+        ));
     }
     let list = args[0].as_list()?;
     let lambda = args[1].as_str().to_string();
@@ -67,7 +71,9 @@ fn cmd_lfilter(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, 
 /// `lreduce list init lambda` — fold a list.
 fn cmd_lreduce(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 3 {
-        return Err(TclError::new("wrong # args: should be \"lreduce list init lambda\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lreduce list init lambda\"",
+        ));
     }
     let list = args[0].as_list()?;
     let mut acc = args[1].clone();
@@ -86,15 +92,13 @@ fn cmd_lreduce(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, 
 /// `range start end ?step?` — generate an integer list.
 fn cmd_range(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 2 {
-        return Err(TclError::new("wrong # args: should be \"range start end ?step?\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"range start end ?step?\"",
+        ));
     }
     let start = args[0].as_int()?;
     let end = args[1].as_int()?;
-    let step = if args.len() > 2 {
-        args[2].as_int()?
-    } else {
-        1
-    };
+    let step = if args.len() > 2 { args[2].as_int()? } else { 1 };
     if step == 0 {
         return Err(TclError::new("range: step cannot be zero"));
     }
@@ -194,7 +198,10 @@ mod tests {
     fn lsearch() {
         let mut interp = Interpreter::new();
         assert_eq!(interp.eval("lsearch [list a b c] b").unwrap().as_str(), "1");
-        assert_eq!(interp.eval("lsearch [list a b c] x").unwrap().as_str(), "-1");
+        assert_eq!(
+            interp.eval("lsearch [list a b c] x").unwrap().as_str(),
+            "-1"
+        );
     }
 
     #[test]
@@ -207,8 +214,14 @@ mod tests {
     #[test]
     fn join_and_split() {
         let mut interp = Interpreter::new();
-        assert_eq!(interp.eval("join [list a b c] ,").unwrap().as_str(), "a,b,c");
-        assert_eq!(interp.eval("llength [split \"a,b,c\" ,]").unwrap().as_str(), "3");
+        assert_eq!(
+            interp.eval("join [list a b c] ,").unwrap().as_str(),
+            "a,b,c"
+        );
+        assert_eq!(
+            interp.eval("llength [split \"a,b,c\" ,]").unwrap().as_str(),
+            "3"
+        );
     }
 
     #[test]
@@ -228,14 +241,18 @@ mod tests {
     #[test]
     fn lmap_basic() {
         let mut interp = Interpreter::new();
-        let result = interp.eval("lmap [list 1 2 3] {x { expr {$x * 10} }}").unwrap();
+        let result = interp
+            .eval("lmap [list 1 2 3] {x { expr {$x * 10} }}")
+            .unwrap();
         assert_eq!(result.as_str(), "10 20 30");
     }
 
     #[test]
     fn lfilter_basic() {
         let mut interp = Interpreter::new();
-        let result = interp.eval("lfilter [list 1 2 3 4 5] {x { expr {$x > 3} }}").unwrap();
+        let result = interp
+            .eval("lfilter [list 1 2 3 4 5] {x { expr {$x > 3} }}")
+            .unwrap();
         assert_eq!(result.as_str(), "4 5");
     }
 

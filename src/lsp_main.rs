@@ -8,7 +8,7 @@ use std::fs;
 use std::io;
 
 use rusticle::interpreter::Interpreter;
-use rusticle::lsp::{Server, read_message, write_message};
+use rusticle::lsp::{read_message, write_message, Server};
 
 fn main() {
     let mut prelude_paths: Vec<String> = Vec::new();

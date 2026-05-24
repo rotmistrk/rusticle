@@ -55,7 +55,9 @@ fn cmd_if(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclEr
 /// `while {cond} {body}`
 fn cmd_while(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() != 2 {
-        return Err(TclError::new("wrong # args: should be \"while test command\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"while test command\"",
+        ));
     }
     let cond_str = args[0].as_str().to_string();
     let body = args[1].as_str().to_string();
@@ -76,7 +78,9 @@ fn cmd_while(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, Tc
 /// `foreach var list body`
 fn cmd_foreach(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() != 3 {
-        return Err(TclError::new("wrong # args: should be \"foreach varName list body\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"foreach varName list body\"",
+        ));
     }
     let var_pattern = args[0].as_str().to_string();
     let list = args[1].as_list()?;
@@ -89,7 +93,10 @@ fn cmd_foreach(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, 
     let mut i = 0;
     while i < list.len() {
         for (j, var) in vars.iter().enumerate() {
-            let val = list.get(i + j).cloned().unwrap_or(TclValue::Str(String::new()));
+            let val = list
+                .get(i + j)
+                .cloned()
+                .unwrap_or(TclValue::Str(String::new()));
             interp.set_var(var, val)?;
         }
         i += step;
@@ -120,7 +127,9 @@ fn parse_foreach_vars(pattern: &str) -> Vec<String> {
 /// `for {init} {cond} {step} {body}`
 fn cmd_for(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() != 4 {
-        return Err(TclError::new("wrong # args: should be \"for start test next command\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"for start test next command\"",
+        ));
     }
     let init = args[0].as_str().to_string();
     let cond = args[1].as_str().to_string();
@@ -155,7 +164,10 @@ fn cmd_continue(_interp: &mut Interpreter, _args: &[TclValue]) -> Result<TclValu
 
 /// `return ?value?`
 fn cmd_return(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
-    let val = args.first().cloned().unwrap_or(TclValue::Str(String::new()));
+    let val = args
+        .first()
+        .cloned()
+        .unwrap_or(TclValue::Str(String::new()));
     Err(TclError::with_code("return", ErrorCode::Return(val)))
 }
 

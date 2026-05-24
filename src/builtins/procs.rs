@@ -14,7 +14,9 @@ pub fn register(interp: &mut Interpreter) {
 /// `proc name args body`
 fn cmd_proc(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() != 3 {
-        return Err(TclError::new("wrong # args: should be \"proc name args body\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"proc name args body\"",
+        ));
     }
     let name = args[0].as_str().to_string();
     let params = parse_proc_params(&args[1].as_str())?;
@@ -49,7 +51,10 @@ fn parse_proc_params(s: &str) -> Result<Vec<ProcParam>, TclError> {
             params.push(ProcParam { name, default });
         } else {
             let name = strip_type_annotation(&elem);
-            params.push(ProcParam { name, default: None });
+            params.push(ProcParam {
+                name,
+                default: None,
+            });
         }
     }
     Ok(params)
@@ -117,7 +122,9 @@ fn cmd_switch(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, T
 /// `match value { pattern ?var? body ... }`
 fn cmd_match(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() != 2 {
-        return Err(TclError::new("wrong # args: should be \"match value {cases}\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"match value {cases}\"",
+        ));
     }
     let value = args[0].clone();
     let body = args[1].as_str().to_string();
@@ -163,7 +170,10 @@ fn parse_match_cases(body: &str) -> Result<Vec<MatchCase>, TclError> {
             if i >= words.len() {
                 return Err(TclError::new("missing body in match"));
             }
-            let body_str = words[i].trim_start_matches('{').trim_end_matches('}').to_string();
+            let body_str = words[i]
+                .trim_start_matches('{')
+                .trim_end_matches('}')
+                .to_string();
             cases.push(MatchCase {
                 pattern,
                 binding,
@@ -176,7 +186,11 @@ fn parse_match_cases(body: &str) -> Result<Vec<MatchCase>, TclError> {
 }
 
 /// Check if a value matches a pattern and bind variables.
-fn match_pattern(interp: &mut Interpreter, value: &TclValue, case: &MatchCase) -> Result<bool, TclError> {
+fn match_pattern(
+    interp: &mut Interpreter,
+    value: &TclValue,
+    case: &MatchCase,
+) -> Result<bool, TclError> {
     let pat = &case.pattern;
     if pat == "_" {
         return Ok(true);
@@ -213,7 +227,10 @@ fn parse_switch_cases(body: &str) -> Result<Vec<(String, String)>, TclError> {
     let mut i = 0;
     while i + 1 < words.len() {
         let pattern = words[i].trim_matches('"').to_string();
-        let script = words[i + 1].trim_start_matches('{').trim_end_matches('}').to_string();
+        let script = words[i + 1]
+            .trim_start_matches('{')
+            .trim_end_matches('}')
+            .to_string();
         cases.push((pattern, script));
         i += 2;
     }

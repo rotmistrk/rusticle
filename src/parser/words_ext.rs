@@ -8,7 +8,11 @@ pub(super) fn peek_heredoc(chars: &[char], pos: usize) -> bool {
 }
 
 /// Parse a heredoc `<<TAG...TAG` or `<<'TAG'...TAG`.
-pub(super) fn parse_heredoc(chars: &[char], pos: &mut usize, line: &mut usize) -> Result<Word, TclError> {
+pub(super) fn parse_heredoc(
+    chars: &[char],
+    pos: &mut usize,
+    line: &mut usize,
+) -> Result<Word, TclError> {
     *pos += 2; // skip <<
     let raw = chars.get(*pos) == Some(&'\'');
     if raw {
@@ -34,7 +38,9 @@ pub(super) fn parse_heredoc(chars: &[char], pos: &mut usize, line: &mut usize) -
     let mut lines_buf: Vec<String> = Vec::new();
     let closing_indent = loop {
         if *pos >= chars.len() {
-            return Err(TclError::new(format!("unterminated heredoc, expected '{tag}'")));
+            return Err(TclError::new(format!(
+                "unterminated heredoc, expected '{tag}'"
+            )));
         }
         let line_start = *pos;
         while *pos < chars.len() && chars[*pos] != '\n' {

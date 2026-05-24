@@ -13,7 +13,9 @@ pub fn register(interp: &mut Interpreter) {
 /// `string subcommand args...`
 fn cmd_string(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"string subcommand ...\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"string subcommand ...\"",
+        ));
     }
     let subcmd = args[0].as_str().to_string();
     let rest = &args[1..];
@@ -26,14 +28,18 @@ fn cmd_string(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, T
         "tolower" => string_tolower(rest),
         "toupper" => string_toupper(rest),
         "first" => string_first(rest),
-        _ => Err(TclError::new(format!("unknown string subcommand \"{subcmd}\""))),
+        _ => Err(TclError::new(format!(
+            "unknown string subcommand \"{subcmd}\""
+        ))),
     }
 }
 
 /// `string length str`
 fn string_length(args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"string length string\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"string length string\"",
+        ));
     }
     Ok(TclValue::Int(args[0].as_str().len() as i64))
 }
@@ -58,7 +64,9 @@ fn string_range(args: &[TclValue]) -> Result<TclValue, TclError> {
 /// `string match pattern str`
 fn string_match(args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 2 {
-        return Err(TclError::new("wrong # args: should be \"string match pattern string\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"string match pattern string\"",
+        ));
     }
     let pattern = args[0].as_str().to_string();
     let s = args[1].as_str().to_string();
@@ -68,7 +76,9 @@ fn string_match(args: &[TclValue]) -> Result<TclValue, TclError> {
 /// `string map {old new ...} str`
 fn string_map(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 2 {
-        return Err(TclError::new("wrong # args: should be \"string map mapping string\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"string map mapping string\"",
+        ));
     }
     let mapping = args[0].as_list()?;
     let mut s = args[1].as_str().to_string();
@@ -85,7 +95,9 @@ fn string_map(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, 
 /// `string trim str ?chars?`
 fn string_trim(args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"string trim string ?chars?\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"string trim string ?chars?\"",
+        ));
     }
     let s = args[0].as_str().to_string();
     if args.len() > 1 {
@@ -100,7 +112,9 @@ fn string_trim(args: &[TclValue]) -> Result<TclValue, TclError> {
 /// `string tolower str`
 fn string_tolower(args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"string tolower string\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"string tolower string\"",
+        ));
     }
     Ok(TclValue::Str(args[0].as_str().to_lowercase()))
 }
@@ -108,7 +122,9 @@ fn string_tolower(args: &[TclValue]) -> Result<TclValue, TclError> {
 /// `string toupper str`
 fn string_toupper(args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"string toupper string\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"string toupper string\"",
+        ));
     }
     Ok(TclValue::Str(args[0].as_str().to_uppercase()))
 }

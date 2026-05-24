@@ -83,9 +83,11 @@ fn split_literal_entries(content: &str) -> Vec<String> {
 
 /// Split a `key: value` pair.
 fn split_kv(entry: &str) -> Result<(String, &str), TclError> {
-    let colon_pos = entry
-        .find(':')
-        .ok_or_else(|| TclError::new(format!("expected 'key: value' in dict literal, got: {entry}")))?;
+    let colon_pos = entry.find(':').ok_or_else(|| {
+        TclError::new(format!(
+            "expected 'key: value' in dict literal, got: {entry}"
+        ))
+    })?;
     let key = entry[..colon_pos].trim();
     let key = if key.starts_with('"') && key.ends_with('"') {
         key[1..key.len() - 1].to_string()

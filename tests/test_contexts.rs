@@ -68,7 +68,9 @@ fn declare_int_invalid() {
 #[test]
 fn declare_bool_valid() {
     let mut interp = Interpreter::new();
-    interp.eval("context flags { declare active : bool }").unwrap();
+    interp
+        .eval("context flags { declare active : bool }")
+        .unwrap();
     interp.eval("set flags::active true").unwrap();
     let result = interp.eval("return $flags::active").unwrap();
     assert_eq!(result.as_str(), "true");
@@ -77,6 +79,8 @@ fn declare_bool_valid() {
 #[test]
 fn declare_bool_invalid() {
     let mut interp = Interpreter::new();
-    interp.eval("context flags { declare active : bool }").unwrap();
+    interp
+        .eval("context flags { declare active : bool }")
+        .unwrap();
     assert!(interp.eval("set flags::active maybe").is_err());
 }

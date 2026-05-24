@@ -44,7 +44,10 @@ fn undefined_variable_warning() {
     let interp = Interpreter::new();
     let result = interp.validate("puts $undefined_var");
     assert!(
-        result.warnings.iter().any(|d| d.message.contains("undefined_var")),
+        result
+            .warnings
+            .iter()
+            .any(|d| d.message.contains("undefined_var")),
         "expected warning about undefined_var: {:?}",
         result.warnings,
     );

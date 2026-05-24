@@ -3,7 +3,11 @@
 use crate::error::TclError;
 use crate::value::TclValue;
 
-pub(super) fn eval_arithmetic(left: &TclValue, op: &str, right: &TclValue) -> Result<TclValue, TclError> {
+pub(super) fn eval_arithmetic(
+    left: &TclValue,
+    op: &str,
+    right: &TclValue,
+) -> Result<TclValue, TclError> {
     if matches!(left, TclValue::Float(_)) || matches!(right, TclValue::Float(_)) {
         let l = left.as_float()?;
         let r = right.as_float()?;
@@ -49,7 +53,11 @@ pub(super) fn eval_arithmetic(left: &TclValue, op: &str, right: &TclValue) -> Re
 }
 
 /// Evaluate a comparison operation.
-pub(super) fn eval_comparison(left: &TclValue, op: &str, right: &TclValue) -> Result<TclValue, TclError> {
+pub(super) fn eval_comparison(
+    left: &TclValue,
+    op: &str,
+    right: &TclValue,
+) -> Result<TclValue, TclError> {
     if let (Ok(l), Ok(r)) = (left.as_float(), right.as_float()) {
         return Ok(TclValue::Bool(match op {
             "==" => (l - r).abs() < f64::EPSILON,

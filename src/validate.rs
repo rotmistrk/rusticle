@@ -95,7 +95,11 @@ impl ValidationContext {
         }
         let mut proc_arities = HashMap::new();
         for (name, proc_def) in &interp.procs {
-            let min = proc_def.params.iter().filter(|p| p.default.is_none()).count();
+            let min = proc_def
+                .params
+                .iter()
+                .filter(|p| p.default.is_none())
+                .count();
             let max = proc_def.params.len();
             proc_arities.insert(name.clone(), (min, max));
         }
@@ -129,7 +133,10 @@ impl ValidationContext {
     }
 
     pub(crate) fn is_var_in_current_scope(&self, name: &str) -> bool {
-        self.known_vars.last().map(|s| s.contains(name)).unwrap_or(false)
+        self.known_vars
+            .last()
+            .map(|s| s.contains(name))
+            .unwrap_or(false)
     }
 }
 

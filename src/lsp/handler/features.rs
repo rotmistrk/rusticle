@@ -115,7 +115,10 @@ pub fn references(server: &Server, id: Option<&Value>, msg: &Value) -> Value {
     json!({"jsonrpc": "2.0", "id": id, "result": refs})
 }
 
-fn proc_signature(documents: &std::collections::HashMap<String, String>, name: &str) -> Option<String> {
+fn proc_signature(
+    documents: &std::collections::HashMap<String, String>,
+    name: &str,
+) -> Option<String> {
     for text in documents.values() {
         if let Ok(parsed) = Parser::parse(text) {
             for cmd in &parsed.commands {

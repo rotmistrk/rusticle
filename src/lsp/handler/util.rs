@@ -43,8 +43,7 @@ pub fn extract_variables(text: &str) -> Vec<String> {
 
 /// Check if a line contains a word as a distinct token.
 pub fn contains_word(line: &str, word: &str) -> bool {
-    line.split(|c: char| is_delimiter(c))
-        .any(|w| w == word)
+    line.split(|c: char| is_delimiter(c)).any(|w| w == word)
 }
 
 fn is_delimiter(c: char) -> bool {

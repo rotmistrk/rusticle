@@ -28,7 +28,9 @@ pub(super) fn list_to_string(items: &[TclValue]) -> String {
 pub(super) fn dict_to_string(pairs: &[(String, TclValue)]) -> String {
     pairs
         .iter()
-        .flat_map(|(k, v): &(String, TclValue)| vec![quote_list_element(k), quote_list_element(&v.as_str())])
+        .flat_map(|(k, v): &(String, TclValue)| {
+            vec![quote_list_element(k), quote_list_element(&v.as_str())]
+        })
         .collect::<Vec<_>>()
         .join(" ")
 }
@@ -38,7 +40,8 @@ fn quote_list_element(s: &str) -> String {
     if s.is_empty() {
         return "{}".to_string();
     }
-    let needs_quoting = s.contains(|c: char| c.is_whitespace() || c == '{' || c == '}' || c == '"' || c == '\\');
+    let needs_quoting =
+        s.contains(|c: char| c.is_whitespace() || c == '{' || c == '}' || c == '"' || c == '\\');
     if needs_quoting {
         format!("{{{s}}}")
     } else {

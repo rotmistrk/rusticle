@@ -27,12 +27,17 @@ fn cmd_list(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, Tc
 /// `lindex list index`
 fn cmd_lindex(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 2 {
-        return Err(TclError::new("wrong # args: should be \"lindex list index\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lindex list index\"",
+        ));
     }
     let list = args[0].as_list()?;
     let idx = args[1].as_int()?;
     let idx = resolve_index(idx, list.len());
-    Ok(list.get(idx).cloned().unwrap_or(TclValue::Str(String::new())))
+    Ok(list
+        .get(idx)
+        .cloned()
+        .unwrap_or(TclValue::Str(String::new())))
 }
 
 /// `llength list`
@@ -47,10 +52,15 @@ fn cmd_llength(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue,
 /// `lappend var element...`
 fn cmd_lappend(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"lappend varName ?value ...?\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lappend varName ?value ...?\"",
+        ));
     }
     let name = args[0].as_str().to_string();
-    let mut list = interp.get_var(&name).map(|v| v.as_list()).unwrap_or(Ok(Vec::new()))?;
+    let mut list = interp
+        .get_var(&name)
+        .map(|v| v.as_list())
+        .unwrap_or(Ok(Vec::new()))?;
     for arg in &args[1..] {
         list.push(arg.clone());
     }
@@ -62,7 +72,9 @@ fn cmd_lappend(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, 
 /// `lrange list first last`
 fn cmd_lrange(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 3 {
-        return Err(TclError::new("wrong # args: should be \"lrange list first last\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lrange list first last\"",
+        ));
     }
     let list = args[0].as_list()?;
     let first = resolve_index(args[1].as_int()?, list.len());
@@ -78,7 +90,9 @@ fn cmd_lrange(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, 
 /// `lsearch list pattern`
 fn cmd_lsearch(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 2 {
-        return Err(TclError::new("wrong # args: should be \"lsearch list pattern\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lsearch list pattern\"",
+        ));
     }
     let list = args[0].as_list()?;
     let pattern = args[1].as_str().to_string();
@@ -103,12 +117,17 @@ fn cmd_lsort(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, T
 /// `lset var index value`
 fn cmd_lset(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.len() < 3 {
-        return Err(TclError::new("wrong # args: should be \"lset varName index value\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"lset varName index value\"",
+        ));
     }
     let name = args[0].as_str().to_string();
     let idx = args[1].as_int()?;
     let value = args[2].clone();
-    let mut list = interp.get_var(&name).map(|v| v.as_list()).unwrap_or(Ok(Vec::new()))?;
+    let mut list = interp
+        .get_var(&name)
+        .map(|v| v.as_list())
+        .unwrap_or(Ok(Vec::new()))?;
     let idx = resolve_index(idx, list.len());
     if idx < list.len() {
         list[idx] = value;
@@ -121,7 +140,9 @@ fn cmd_lset(interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, Tcl
 /// `join list ?sep?`
 fn cmd_join(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"join list ?joinString?\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"join list ?joinString?\"",
+        ));
     }
     let list = args[0].as_list()?;
     let sep = if args.len() > 1 {
@@ -140,7 +161,9 @@ fn cmd_join(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, Tc
 /// `split str ?sep?`
 fn cmd_split(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, TclError> {
     if args.is_empty() {
-        return Err(TclError::new("wrong # args: should be \"split string ?splitChars?\""));
+        return Err(TclError::new(
+            "wrong # args: should be \"split string ?splitChars?\"",
+        ));
     }
     let s = args[0].as_str().to_string();
     let parts = if args.len() > 1 {
@@ -149,11 +172,15 @@ fn cmd_split(_interp: &mut Interpreter, args: &[TclValue]) -> Result<TclValue, T
             // Split into individual characters
             s.chars().map(|c| TclValue::Str(c.to_string())).collect()
         } else {
-            s.split(&sep).map(|p| TclValue::Str(p.to_string())).collect()
+            s.split(&sep)
+                .map(|p| TclValue::Str(p.to_string()))
+                .collect()
         }
     } else {
         // Default: split on whitespace
-        s.split_whitespace().map(|p| TclValue::Str(p.to_string())).collect()
+        s.split_whitespace()
+            .map(|p| TclValue::Str(p.to_string()))
+            .collect()
     };
     Ok(TclValue::List(parts))
 }

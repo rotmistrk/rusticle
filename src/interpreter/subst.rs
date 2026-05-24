@@ -1,6 +1,7 @@
 //! Variable and command substitution.
 use super::subst_access::{
-    apply_index, apply_property, is_var_char, lookup_var, subst_command, try_parse_value, unescape_char,
+    apply_index, apply_property, is_var_char, lookup_var, subst_command, try_parse_value,
+    unescape_char,
 };
 
 use crate::error::TclError;
@@ -10,7 +11,10 @@ use super::Interpreter;
 
 /// Check if the entire input is a single substitution ($var or [cmd]).
 /// If so, return the value directly to preserve type information.
-fn try_direct_subst(chars: &[char], interp: &mut Interpreter) -> Result<Option<TclValue>, TclError> {
+fn try_direct_subst(
+    chars: &[char],
+    interp: &mut Interpreter,
+) -> Result<Option<TclValue>, TclError> {
     if chars.is_empty() {
         return Ok(None);
     }

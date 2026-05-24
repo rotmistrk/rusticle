@@ -48,7 +48,9 @@ impl Server {
             "textDocument/hover" => vec![features::hover(self, id, msg)],
             "textDocument/definition" => vec![features::definition(self, id, msg)],
             "textDocument/references" => vec![features::references(self, id, msg)],
-            "textDocument/rename" => vec![json!({"jsonrpc": "2.0", "id": id, "result": {"changes": {}}})],
+            "textDocument/rename" => {
+                vec![json!({"jsonrpc": "2.0", "id": id, "result": {"changes": {}}})]
+            }
             "textDocument/codeAction" => vec![json!({"jsonrpc": "2.0", "id": id, "result": []})],
             _ => {
                 if let Some(id) = id {
@@ -95,7 +97,10 @@ impl Server {
 
     fn did_change(&mut self, msg: &Value) -> Vec<Value> {
         let uri = msg["params"]["textDocument"]["uri"].as_str().unwrap_or("");
-        if let Some(change) = msg["params"]["contentChanges"].as_array().and_then(|a| a.first()) {
+        if let Some(change) = msg["params"]["contentChanges"]
+            .as_array()
+            .and_then(|a| a.first())
+        {
             if let Some(text) = change["text"].as_str() {
                 self.documents.insert(uri.to_string(), text.to_string());
             }
