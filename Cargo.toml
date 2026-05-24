@@ -9,6 +9,13 @@ license = "MIT"
 name = "rusticle"
 path = "src/main.rs"
 
+[[bin]]
+name = "rusticle-lsp"
+path = "src/lsp_main.rs"
+
 [lib]
 name = "rusticle"
 path = "src/lib.rs"
+
+[dependencies]
+serde_json = "1"

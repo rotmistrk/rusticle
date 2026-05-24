@@ -26,23 +26,27 @@ $(BINARY): release
 install: $(BINARY)
 	install -d $(PREFIX)/bin
 	install -m 755 $(BINARY) $(PREFIX)/bin/rusticle
+	install -m 755 target/release/rusticle-lsp $(PREFIX)/bin/rusticle-lsp
 	install -d $(PREFIX)/share/rusticle/examples
 	install -m 644 examples/*.tcl $(PREFIX)/share/rusticle/examples/
-	@echo "  ✅ rusticle → $(PREFIX)/bin/rusticle"
+	@echo "  ✅ rusticle, rusticle-lsp → $(PREFIX)/bin/"
 
 install-local: $(BINARY)
 	install -d $(LOCAL_PREFIX)/bin
 	install -m 755 $(BINARY) $(LOCAL_PREFIX)/bin/rusticle
+	install -m 755 target/release/rusticle-lsp $(LOCAL_PREFIX)/bin/rusticle-lsp
 	install -d $(LOCAL_PREFIX)/share/rusticle/examples
 	install -m 644 examples/*.tcl $(LOCAL_PREFIX)/share/rusticle/examples/
-	@echo "  ✅ rusticle → $(LOCAL_PREFIX)/bin/rusticle"
+	@echo "  ✅ rusticle, rusticle-lsp → $(LOCAL_PREFIX)/bin/"
 
 uninstall:
 	rm -f $(PREFIX)/bin/rusticle
+	rm -f $(PREFIX)/bin/rusticle-lsp
 	rm -rf $(PREFIX)/share/rusticle
 
 uninstall-local:
 	rm -f $(LOCAL_PREFIX)/bin/rusticle
+	rm -f $(LOCAL_PREFIX)/bin/rusticle-lsp
 	rm -rf $(LOCAL_PREFIX)/share/rusticle
 
 clean:

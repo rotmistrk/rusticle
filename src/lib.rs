@@ -9,6 +9,7 @@ pub mod builtins;
 pub mod context;
 pub mod error;
 pub mod interpreter;
+pub mod lsp;
 pub mod manifest;
 pub mod parser;
 pub mod types;
