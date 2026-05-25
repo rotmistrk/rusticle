@@ -142,7 +142,17 @@ fn check_command_exists(
     }
     // "Did you mean?" suggestion
     let suggestion = find_similar(name, &ctx.known_commands);
-    result.add_error(format!("unknown command \"{name}\""), cmd.line, suggestion);
+    if let Some(ref hint) = suggestion {
+        // Only flag as error if there's a close match (likely typo)
+        result.add_error(
+            format!("unknown command \"{name}\" (did you mean \"{hint}\"?)"),
+            cmd.line,
+            suggestion,
+        );
+    } else {
+        // No close match — likely a runtime-loaded command, just warn
+        result.add_warning(format!("unknown command \"{name}\""), cmd.line);
+    }
 }
 
 /// Check proc arity.
