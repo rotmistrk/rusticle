@@ -2,6 +2,7 @@
 
 mod diagnostics;
 mod features;
+mod preamble;
 mod util;
 
 use std::collections::HashMap;
@@ -12,6 +13,8 @@ use serde_json::{json, Value};
 pub struct Server {
     pub(crate) interp: Interpreter,
     pub(crate) documents: HashMap<String, String>,
+    /// Cache: interpreter name → preamble text (empty = failed/no preamble).
+    preamble_cache: HashMap<String, String>,
     exit: bool,
 }
 
@@ -20,6 +23,7 @@ impl Server {
         Self {
             interp,
             documents: HashMap::new(),
+            preamble_cache: HashMap::new(),
             exit: false,
         }
     }
@@ -92,6 +96,7 @@ impl Server {
         let uri = params["uri"].as_str().unwrap_or("");
         let text = params["text"].as_str().unwrap_or("");
         self.documents.insert(uri.to_string(), text.to_string());
+        self.load_shebang_preamble(text);
         vec![diagnostics::publish(self, uri)]
     }
 
@@ -116,5 +121,21 @@ impl Server {
             "method": "textDocument/publishDiagnostics",
             "params": {"uri": uri, "diagnostics": []}
         })]
+    }
+
+    /// Parse shebang from text, exec interpreter --lsp-preamble, cache and eval result.
+    fn load_shebang_preamble(&mut self, text: &str) {
+        let interpreter = match preamble::parse_shebang(text) {
+            Some(name) => name,
+            None => return,
+        };
+        if self.preamble_cache.contains_key(&interpreter) {
+            return;
+        }
+        let output = preamble::exec_lsp_preamble(&interpreter);
+        if !output.is_empty() {
+            let _ = self.interp.eval(&output);
+        }
+        self.preamble_cache.insert(interpreter, output);
     }
 }
