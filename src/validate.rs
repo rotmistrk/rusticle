@@ -95,12 +95,13 @@ impl ValidationContext {
         }
         let mut proc_arities = HashMap::new();
         for (name, proc_def) in &interp.procs {
+            let is_variadic = proc_def.params.last().is_some_and(|p| p.name == "args");
             let min = proc_def
                 .params
                 .iter()
-                .filter(|p| p.default.is_none())
+                .filter(|p| p.default.is_none() && p.name != "args")
                 .count();
-            let max = proc_def.params.len();
+            let max = if is_variadic { usize::MAX } else { proc_def.params.len() };
             proc_arities.insert(name.clone(), (min, max));
         }
         Self {
