@@ -73,6 +73,40 @@ interp.register_command("greet", |_interp, args| {
 ### Introspection
 `info exists`, `info commands`, `info procs`, `info vars`, `info locals`, `info globals`, `info args`, `info body`, `info level`
 
+## Contexts
+
+Contexts are named scopes for structured application state. Variables are
+accessed as `$ctx::var` and are globally visible — readable and writable from
+any scope, including inside procs.
+
+```tcl
+context app {
+    declare mode : enum {normal insert}
+    set mode normal
+    set count 0
+}
+
+# Read from anywhere
+puts "Mode is $app::mode"
+
+# Write from a proc — targets global scope automatically
+proc increment {} {
+    incr app::count
+}
+
+# Type-safe: invalid values are rejected
+set app::mode insert   ;# ok
+set app::mode bogus    ;# ERROR: not a valid value for enum {normal insert}
+```
+
+**Key behaviors:**
+- `set ctx::var value` always writes to global scope (where contexts live)
+- Writing to an undefined context fails: `can't set "bad::x": no such context "bad"`
+- Type declarations (`declare var : type`) are enforced on every assignment
+- The validator warns at compile-time about references to undefined contexts
+
+Supported types for `declare`: `string`, `int`, `float`, `bool`, `list`, `dict`, `enum {values...}`. Append `?` for nullable (e.g., `int?`).
+
 ## Examples
 
 See the `examples/` directory:

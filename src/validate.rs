@@ -83,6 +83,8 @@ pub(crate) struct ValidationContext {
     pub(crate) called_procs: HashSet<String>,
     /// Defined procs (for dead code detection).
     pub(crate) defined_procs: HashSet<String>,
+    /// Known context names.
+    pub(crate) known_contexts: HashSet<String>,
 }
 
 impl ValidationContext {
@@ -110,6 +112,7 @@ impl ValidationContext {
             proc_arities,
             called_procs: HashSet::new(),
             defined_procs: HashSet::new(),
+            known_contexts: interp.contexts.keys().cloned().collect(),
         }
     }
 
@@ -130,6 +133,10 @@ impl ValidationContext {
     }
 
     pub(crate) fn is_var_known(&self, name: &str) -> bool {
+        // Context-qualified: valid if context is known
+        if let Some((ctx_name, _)) = name.split_once("::") {
+            return self.known_contexts.contains(ctx_name);
+        }
         self.known_vars.iter().any(|s| s.contains(name))
     }
 

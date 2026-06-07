@@ -97,12 +97,22 @@ impl Interpreter {
     }
 
     /// Set a variable in the current scope.
-    /// Validates type declarations for context variables.
+    /// Context-qualified names (ctx::var) are always written to global scope
+    /// and validated against the context's type declarations.
     pub fn set_var(&mut self, name: &str, value: TclValue) -> Result<(), TclError> {
         if name.contains("::") {
+            let ctx_name = name.split("::").next().unwrap_or("");
+            if !self.contexts.contains_key(ctx_name) {
+                return Err(TclError::new(format!(
+                    "can't set \"{name}\": no such context \"{ctx_name}\""
+                )));
+            }
             crate::context::check_context_assignment(self, name, &value)?;
+            // Always write to global scope where context vars live
+            self.scopes[0].vars.insert(name.to_string(), value);
+        } else {
+            scope::set_var(&mut self.scopes, name, value);
         }
-        scope::set_var(&mut self.scopes, name, value);
         Ok(())
     }
 

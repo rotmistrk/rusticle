@@ -37,6 +37,7 @@ fn validate_one_command(
     match name {
         "set" => validate_set(cmd, ctx, result),
         "proc" => validate_proc(cmd, ctx, result),
+        "context" => validate_context(cmd, ctx, result),
         "if" | "while" | "foreach" | "for" => {
             validate_body_words(cmd, ctx, result);
         }
@@ -54,14 +55,24 @@ fn validate_one_command(
 fn validate_set(cmd: &Command, ctx: &mut ValidationContext, result: &mut ValidationResult) {
     if cmd.words.len() >= 2 {
         let var_name = cmd.words[1].text().to_string();
-        // Check for shadowing
-        if ctx.is_var_known(&var_name) && !ctx.is_var_in_current_scope(&var_name) {
-            result.add_warning(
-                format!("variable \"{var_name}\" shadows outer variable"),
-                cmd.line,
-            );
+        if let Some((ctx_name, _)) = var_name.split_once("::") {
+            // Context-qualified: check that context exists
+            if !ctx.known_contexts.contains(ctx_name) {
+                result.add_warning(
+                    format!("no such context \"{ctx_name}\" in \"{var_name}\""),
+                    cmd.line,
+                );
+            }
+        } else {
+            // Check for shadowing
+            if ctx.is_var_known(&var_name) && !ctx.is_var_in_current_scope(&var_name) {
+                result.add_warning(
+                    format!("variable \"{var_name}\" shadows outer variable"),
+                    cmd.line,
+                );
+            }
+            ctx.define_var(&var_name);
         }
-        ctx.define_var(&var_name);
     }
     check_var_references(cmd, ctx, result);
 }
@@ -97,6 +108,27 @@ fn validate_proc(cmd: &Command, ctx: &mut ValidationContext, result: &mut Valida
         }
         ctx.pop_scope();
     }
+}
+
+/// Validate a `context` definition — register context name and vars.
+fn validate_context(cmd: &Command, ctx: &mut ValidationContext, result: &mut ValidationResult) {
+    if cmd.words.len() >= 2 {
+        let ctx_name = cmd.words[1].text().to_string();
+        ctx.known_contexts.insert(ctx_name.clone());
+        // Parse body to find set commands and register as known vars
+        if cmd.words.len() >= 3 {
+            let body = cmd.words[2].text();
+            if let Ok(parsed) = crate::parser::Parser::parse(body) {
+                for sub_cmd in &parsed.commands {
+                    if sub_cmd.words.len() >= 2 && sub_cmd.words[0].text() == "set" {
+                        let var = sub_cmd.words[1].text();
+                        ctx.define_var(&format!("{ctx_name}::{var}"));
+                    }
+                }
+            }
+        }
+    }
+    check_var_references(cmd, ctx, result);
 }
 
 /// Validate body words (for if/while/foreach/for).
